@@ -1,5 +1,5 @@
 // App.jsx
-import React, { useState, useMemo, Suspense } from 'react';
+import React, { useRef, useState, useMemo, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html, Loader } from '@react-three/drei';
 
@@ -14,6 +14,12 @@ const SofaModel = React.lazy(() =>
 );
 const SofaBedModel = React.lazy(() =>
   import(/* webpackChunkName: "sofa-bed" */ './components/model/SofaBedModel')
+);
+const CoffeeTableModel = React.lazy(() =>
+  import(/* webpackChunkName: "coffee-table" */ './components/model/CoffeeTableModel')
+);
+const RoundCoffeeTableModel = React.lazy(() =>
+  import(/* webpackChunkName: "round-coffee-table" */ './components/model/RoundCoffeeTableModel')
 );
 
 const CONFIG = {
@@ -36,6 +42,16 @@ const CONFIG = {
       none: { label: 'None', skip: true },
     },
     defaultId: 'sofa', // make sure this matches an option
+  },
+    coffeetable: {
+    label: 'Coffee Table',
+    position: [0, 0.3, 0],
+    options: {
+      coffeetable: { label: 'Coffee Table' },
+      roundcoffeetable: { label: 'Round Coffee Table' },
+      none: { label: 'None', skip: true },
+    },
+    defaultId: 'coffeetable', // make sure this matches an option
   },
 };
 
@@ -84,14 +100,32 @@ function Sofa({ id, position }) {
   if (id === 'sofa') {
     return (
       <Suspense fallback={<ModelFallback text="Loading sofa…" />}>
-        <SofaModel position={position} />
+        <SofaModel position={position} scale={1.3}/>
       </Suspense>
     );
   }
   if (id === 'sofabed') {
     return (
       <Suspense fallback={<ModelFallback text="Loading sofa bed…" />}>
-        <SofaBedModel position={position} />
+        <SofaBedModel position={position} scale={0.8}/>
+      </Suspense>
+    );
+  }
+  return null;
+}
+
+function CoffeeTable({ id, position }) {
+  if (id === 'coffeetable') {
+    return (
+      <Suspense fallback={<ModelFallback text="Loading coffee table—" />}>
+        <CoffeeTableModel position={position} scale={0.8}/>
+      </Suspense>
+    );
+  }
+  if (id === 'roundcoffeetable') {
+    return (
+      <Suspense fallback={<ModelFallback text="Loading round coffee table—" />}>
+        <RoundCoffeeTableModel position={position} scale={0.5} />
       </Suspense>
     );
   }
@@ -111,6 +145,8 @@ export default function App() {
   const preloadSingle = () => import('./components/model/SingleBedModel');
   const preloadSofa = () => import('./components/model/SofaModel');
   const preloadSofaBed = () => import('./components/model/SofaBedModel');
+  const preloadCoffeeTable = () => import('./components/model/CoffeeTableModel');
+  const preloadRoundCoffeeTable = () => import('./components/model/RoundCoffeeTableModel');
 
   return (
     <div style={{ display: 'flex' }}>
@@ -197,6 +233,47 @@ export default function App() {
             {CONFIG.sofa.options.none.label}
           </label>
         </section>
+
+        {/* Coffee Table group */}
+        <section style={{ marginBottom: 16 }}>
+          <h3>{CONFIG.coffeetable.label}</h3>
+
+          <label
+            style={{ display: 'block', margin: '4px 0' }}
+            onMouseEnter={preloadCoffeeTable}
+          >
+            <input
+              type="radio"
+              name="coffeetable"
+              checked={selection.coffeetable === 'coffeetable'}
+              onChange={() => setSelection((s) => ({ ...s, coffeetable: 'coffeetable' }))}
+            />{' '}
+            {CONFIG.coffeetable.options.coffeetable.label}
+          </label>
+
+          <label
+            style={{ display: 'block', margin: '4px 0' }}
+            onMouseEnter={preloadRoundCoffeeTable}
+          >
+            <input
+              type="radio"
+              name="coffeetable"
+              checked={selection.coffeetable === 'roundcoffeetable'}
+              onChange={() => setSelection((s) => ({ ...s, coffeetable: 'roundcoffeetable' }))}
+            />{' '}
+            {CONFIG.coffeetable.options.roundcoffeetable.label}
+          </label>
+
+          <label style={{ display: 'block', margin: '4px 0' }}>
+            <input
+              type="radio"
+              name="coffeetable"
+              checked={selection.coffeetable === 'none'}
+              onChange={() => setSelection((s) => ({ ...s, coffeetable: 'none' }))}
+            />{' '}
+            {CONFIG.coffeetable.options.none.label}
+          </label>
+        </section>
       </aside>
 
       {/* 3D Canvas */}
@@ -224,6 +301,7 @@ export default function App() {
         {/* Furniture */}
         <Bed id={selection.bed} position={CONFIG.bed.position} />
         <Sofa id={selection.sofa} position={CONFIG.sofa.position} />
+        <CoffeeTable id={selection.coffeetable} position={CONFIG.coffeetable.position} />
       </Canvas>
 
       {/* Nice global loader (shows GLTF progress); optional */}

@@ -9,7 +9,7 @@ export default function SofaModel(props) {
         object={scene}
         castShadow
         receiveShadow
-        position={[2, 0, -2]}
+        position={[1.5, 0, -0.5]}
         rotation={[0, 155.5, 0]}
       />
     </group>

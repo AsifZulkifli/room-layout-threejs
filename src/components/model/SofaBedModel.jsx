@@ -9,8 +9,7 @@ export default function SofaBedModel(props) {
         object={scene}
         castShadow
         receiveShadow
-        position={[15, -0.3, -2]}
-        rotation={[0, 0, 0]}
+        position={[14, -0.3, -2]}
       />
     </group>
   );
